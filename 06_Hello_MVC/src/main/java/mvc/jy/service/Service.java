@@ -36,6 +36,13 @@ public class Service {
 		
 		return result;
 	}
+	
+	public Member selectMemberById(String userId) {
+		Connection conn = getConnection();
+		Member m = dao.login(conn,userId);
+		close(conn);
+		return m;
+	}
 
 
 }

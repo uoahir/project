@@ -10,7 +10,8 @@
 			<tr>
 				<th>아이디</th>
 				<td>
-					<input type="text" placeholder="4글자이상" name="userId" id="userId_" >
+					<input type="text" placeholder="4글자이상" name="userId" id="userId_" />
+					<input type ="button" value="중복확인" onclick="checkId();"/>
 				</td>
 			</tr>
 			<tr>
@@ -85,12 +86,19 @@
     		const pw= document.querySelector("#password_").value;
     		const pwck = e.target.value;
     		const resultContainer=document.querySelector("#ckresult");
-    		if(pw==pwck){
-    			resultContainer.innerText = "비밀번호가 일치합니다."
-    			resultContainer.style.color="green";
-    		}else{
-    			resultContainer.innerText = "비밀번호가 일치하지 않습니다."
-    			resultContainer.style.color="red";
+    		if(pw.length>=4 && pwck.length>=4){
+    			if(pw==pwck){
+	    			resultContainer.innerText = "비밀번호가 일치합니다."
+	    			resultContainer.style.color="green";
+	    		}else{
+	    			resultContainer.innerText = "비밀번호가 일치하지 않습니다."
+	    			resultContainer.style.color="red";
+	    			document.querySelector("#password_").value="";
+	    			e.target.value="";
+	    			document.quetySelector("#password_").focus();
+	    		}
+    		} else {
+    			resultContainer.innerText="";
     		}
     	});
     	
@@ -102,9 +110,24 @@
     		if(userId.length<4){
     			alert('아이디는 4글자 이상 작성해야 합니다.');
     			userId="";
-    			
     			return false;
     		}
+    		const password = $("#password_").val().trim();
+    		if(password.length<4){
+    			alert("패스워드는 4글자 이상 작성해야 합니다.");
+    			return false;
+   
+    		}
+    	}
+    	const checkId = (e)=>{
+    		const userId=$("#userId_").val().trim();
+    		if(userId.length>=4){
+	    		// 1. url 주소, 여는방법, 옵션(width, height)
+	    		open("<%=request.getContextPath()%>/member/idDuplicate.do?userId="+userId,"_blank","width=300, height=200");
+    		} else {
+    			alert("아이디를 4글자 이상 입력하새요");
+    		}
+    		
     	}
     </script>
 <%@ include file="/WEB-INF/views/common/footer.jsp" %>	

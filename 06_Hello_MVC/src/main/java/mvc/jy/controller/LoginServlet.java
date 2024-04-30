@@ -17,7 +17,7 @@ import mvc.jy.service.Service;
 /**
  * Servlet implementation class LoginServlet
  */
-@WebServlet("/login.do")
+@WebServlet(name = "login", urlPatterns="/login.do")
 public class LoginServlet extends HttpServlet {
 	private static final long serialVersionUID = 1L;
        

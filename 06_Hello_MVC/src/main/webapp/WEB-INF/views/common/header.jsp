@@ -73,10 +73,10 @@
 					</tr>
 					<tr>
 						<td>
-							<input type = "button" value="마이패이지">
+							<input type = "button" value="마이패이지" onclick="location.assign('<%=request.getContextPath()%>/member/memberview.do?userId=<%=loginMember.getUserId()%>')">
 						</td>
 						<td>
-							<input type = "button" value="로그아웃" onclick="location.replace("")">
+							<input type = "button" value="로그아웃" onclick="location.replace('<%=request.getContextPath()%>/logout.do')">
 						</td>
 					</tr>
 				</table>
@@ -105,6 +105,11 @@
 				<li>
 					<a href="">게시판</a>
 				</li>
+				<%if(loginMember!=null && loginMember.getUserId().equals("admin")){ %>
+				<li>
+					<a href="<%=request.getContextPath()%>/admin/memberlist.do">회원관리</a>
+				</li>
+				<%} %>
 			</ul>
 		</nav>
 	</header>
