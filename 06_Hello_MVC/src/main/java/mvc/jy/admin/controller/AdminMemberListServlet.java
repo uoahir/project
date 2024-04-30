@@ -31,11 +31,51 @@ public class AdminMemberListServlet extends HttpServlet {
 	 * @see HttpServlet#doGet(HttpServletRequest request, HttpServletResponse response)
 	 */
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-		List<Member> members = new AdminService().selectMemberAll();
+		
+		int cPage =0; 
+		try {
+			cPage = Integer.parseInt(request.getParameter("cPage"));			
+		} catch(NumberFormatException e) {
+			cPage=1;
+		}
+		int numPerpage = 5;
+		
+		
+		// pageBar 만들기
+		StringBuffer pageBar = new StringBuffer();
+		int totalData = new AdminService().selectMemberAllCount();
+		int totalPage = (int)Math.ceil((double)totalData/numPerpage);
+		int pageBarSize =5;
+		int pageNo = ((cPage-1)/pageBarSize)*pageBarSize + 1;
+		int pageEnd = pageNo + pageBarSize -1;
+		
+		// pageBar html 
+		if(pageNo==1) {
+			pageBar.append("<span>[이전]</span>");
+		} else {
+			pageBar.append("<a href='"+request.getRequestURI()+"?cPage="+(pageNo-1)+"'>이전</a>");
+		}
+		while(!(pageNo>pageEnd||pageNo>totalPage)) {
+			if(pageNo == cPage) {
+				pageBar.append("<span>"+pageNo+"</span>");
+			} else {
+				pageBar.append("<a href='"+request.getRequestURI()+"?cPage="+(pageNo)+"'>" + pageNo +"</a>");
+			}
+			pageNo ++;
+		}
+		if(pageNo > totalPage) {
+			pageBar.append("<span>[다음]</span>");
+		} else {
+			pageBar.append("<a href='"+request.getRequestURI()+"?cPage="+(pageNo-1)+"'>[다음]</a>");
+		}
+		
+		request.setAttribute("pageBar", pageBar);
+		
+		List<Member> members = new AdminService().selectMemberAll(cPage,numPerpage);
 		
 		request.setAttribute("members", members);
 		
-		request.getRequestDispatcher(request.getServletContext().getInitParameter("viewpath")+"/member/memberList.jsp").forward(request, response);;
+		request.getRequestDispatcher(request.getServletContext().getInitParameter("viewpath")+"/member/memberList.jsp").forward(request, response);
 	}
 
 	/**

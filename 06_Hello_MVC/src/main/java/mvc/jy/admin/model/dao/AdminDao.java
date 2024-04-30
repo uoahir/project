@@ -1,5 +1,7 @@
 package mvc.jy.admin.model.dao;
 
+import static mvc.jy.common.JDBCTemplate.close;
+
 import java.io.FileReader;
 import java.io.IOException;
 import java.sql.Connection;
@@ -12,7 +14,6 @@ import java.util.Properties;
 
 import mvc.jy.model.dao.MemberDao;
 import mvc.jy.model.dto.Member;
-import static mvc.jy.common.JDBCTemplate.*;
 
 public class AdminDao {
 	private Properties sql = new Properties();
@@ -27,23 +28,46 @@ public class AdminDao {
 		}
 	}
 	
-	public List<Member> selectMemberAll(Connection conn){
+	public List<Member> selectMemberAll(Connection conn, int cPage, int numPerpage){
 		List<Member> members = new ArrayList<>();
 		PreparedStatement pstmt = null;
 		ResultSet rs = null;
 		try {
+			System.out.println(cPage);
 			pstmt = conn.prepareStatement(sql.getProperty("selectMemberAll"));
+			pstmt.setInt(1, (cPage-1)*numPerpage+1);
+			pstmt.setInt(2, cPage*numPerpage);
 			rs = pstmt.executeQuery();
 			while(rs.next()) {
 				members.add(MemberDao.makeMember(rs));
 			}
-			
 		} catch(SQLException e) {
 			e.printStackTrace();
 		} finally {
 			close(rs);
 			close(pstmt);
 		}	
+		System.out.println(members+" 맞아?");
 		return members;
+	}
+	
+	public int selectMemberAllCount(Connection conn) {
+		PreparedStatement pstmt = null;
+		ResultSet rs = null;
+		int result = 0; 
+		
+		try {
+			pstmt = conn.prepareStatement(sql.getProperty("selectMemberAllCount"));
+			rs= pstmt.executeQuery();
+			if(rs.next()) {
+				result = rs.getInt(1);
+			}
+		} catch(SQLException e) {
+			e.printStackTrace();
+		}finally {
+			close(rs);
+			close(pstmt);
+		}
+		return result;
 	}
 }

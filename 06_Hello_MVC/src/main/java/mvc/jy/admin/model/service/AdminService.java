@@ -10,10 +10,19 @@ import static mvc.jy.common.JDBCTemplate.*;
 public class AdminService {
 	
 	private AdminDao dao = new AdminDao();
-	public List<Member> selectMemberAll(){
+	
+	public List<Member> selectMemberAll(int cPage, int numPerpage){
 		Connection conn = getConnection();
-		List<Member> members = dao.selectMemberAll(conn);
+		List<Member> members = dao.selectMemberAll(conn, cPage, numPerpage);
 		close(conn);
 		return members;
 	}
+	public int selectMemberAllCount(){
+		Connection conn = getConnection();
+		int result = dao.selectMemberAllCount(conn);
+		close(conn);
+		return result;
+	}
+	
+
 }
