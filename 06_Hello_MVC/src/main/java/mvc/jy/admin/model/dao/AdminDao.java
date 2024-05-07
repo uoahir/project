@@ -70,4 +70,58 @@ public class AdminDao {
 		}
 		return result;
 	}
+	
+	public List<Member> searchMember(Connection conn, String type, String keyword, int cPage, int numPerPage){
+		PreparedStatement pstmt = null;
+		ResultSet rs = null;
+		List<Member> result = new ArrayList<>();
+		try {
+			String sql = this.sql.getProperty("selectSearchMember");
+			sql = sql.replace("#COL", type);
+			
+			pstmt = conn.prepareStatement(sql);
+			pstmt.setString(1, type.equals("userName")? "%" + keyword + "%" : keyword);
+			pstmt.setInt(2, (cPage-1)*numPerPage+1);
+			pstmt.setInt(3, cPage*numPerPage);
+		
+			rs = pstmt.executeQuery();
+			while(rs.next()) {
+				result.add(MemberDao.makeMember(rs));
+			}
+			
+		} catch(SQLException e) {
+			e.printStackTrace();
+		} finally {
+			close(rs);
+			close(pstmt);
+		}
+		
+		return result;
+	}
+	
+	public int searchMemberCount(Connection conn, String type, String keyword) {
+		PreparedStatement pstmt = null;
+		ResultSet rs = null;
+		int result = 0;
+		String sql = this.sql.getProperty("searchMemberCount");
+		sql = sql.replace("#COL", type);
+		try {
+			pstmt = conn.prepareStatement(sql);
+			pstmt.setString(1, type.equals("userName")?"%"+keyword+"%":keyword);
+			
+			rs = pstmt.executeQuery();
+			if(rs.next()) result = rs.getInt(1);
+			
+		} catch(SQLException e) {
+			e.printStackTrace();
+		} finally {
+			close(rs);
+			close(pstmt);
+		}
+		
+		
+		return result;
+	}
+	
+	
 }

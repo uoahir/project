@@ -84,3 +84,11 @@ section#enroll-container {text-align:center;}
 section#enroll-container input{margin:3px;}
 section#enroll-container table{margin:0 auto;}
 section#enroll-container table th {padding:0 10px; text-align:right;}
+
+   div#search-container {margin:0 0 10px 0; padding:3px; 
+    background-color: rgba(0, 188, 212, 0.3);}
+    div#search-userId{display:inline-block;}
+    div#search-userName{display:none;}
+    div#search-gender{display:none;}
+    div#numPerpage-container{float:right;}
+    form#numperPageFrm{display:inline;}

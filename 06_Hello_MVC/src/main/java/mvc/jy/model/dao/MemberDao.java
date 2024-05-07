@@ -9,10 +9,12 @@ import java.sql.Date;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Properties;
 
 import mvc.jy.model.dto.Member;
+import mvc.jy.model.dto.Notice;
 public class MemberDao {
 	
 	private Properties sql = new Properties();
@@ -94,5 +96,96 @@ public class MemberDao {
 			close(pstmt);
 		}
 		return result;
+	}
+	
+	public List<Notice> searchNotice(Connection conn, int cPage, int numPerpage){
+		PreparedStatement pstmt = null;
+		ResultSet rs = null;
+		List<Notice> notice= new ArrayList<>();
+		try {
+			pstmt = conn.prepareStatement(this.sql.getProperty("searchNotice"));
+			pstmt.setInt(1, (cPage-1)*numPerpage+1);
+			pstmt.setInt(2, cPage*numPerpage);
+			
+			rs =  pstmt.executeQuery();
+			
+			while(rs.next()) {
+				notice.add(getNotice(rs));
+			}
+		} catch(SQLException e) {
+			e.printStackTrace();
+		} finally {
+			close(rs);
+			close(pstmt);
+		}
+		return notice;
+	}
+	
+	public int selectNoticeCount(Connection conn) {
+		PreparedStatement pstmt = null;
+		ResultSet rs = null;
+		int result = 0;
+		try {
+			pstmt = conn.prepareStatement(sql.getProperty("selectNoticeCount"));
+			rs = pstmt.executeQuery();
+			
+			rs.next();
+			result=rs.getInt(1);
+			
+		} catch(SQLException e) {
+			e.printStackTrace();
+		} finally {
+			close(rs);
+			close(pstmt);
+		}
+		return result;
+		
+	}
+	
+	public Notice selectNoticeByNo(Connection conn, int no) {
+		PreparedStatement pstmt = null;
+		ResultSet rs = null;
+		Notice notice = null;
+		try {
+			pstmt = conn.prepareStatement(sql.getProperty("selectNoticeByNo"));
+			pstmt.setInt(1, no);
+			
+			rs = pstmt.executeQuery();
+			if(rs.next()) {
+				notice = getNotice(rs);
+			}
+		} catch(SQLException e) {
+			e.printStackTrace();
+		} finally {
+			close(rs);
+			close(pstmt);
+		}
+		return notice;
+	}
+	
+	public int insertNotice(Connection conn, Notice n) {
+		PreparedStatement pstmt = null;
+		int result = 0;
+		try {
+			pstmt = conn.prepareStatement(sql.getProperty("insertNotice"));
+			pstmt.setString(1, n.getNoticeTitle());
+			pstmt.setString(2, n.getNoticeWriter());
+			pstmt.setString(3, n.getNoticeContent());
+			pstmt.setString(4, n.getFilePath());
+			
+			result = pstmt.executeUpdate();
+		} catch(SQLException e) {
+			e.printStackTrace();
+		} finally {
+			close(pstmt);
+		}
+		return result;
+	}
+	
+	public static Notice getNotice(ResultSet rs) throws SQLException {
+		return Notice.builder().noticeNo(rs.getInt("notice_no")).noticeTitle(rs.getString("notice_title"))
+		.noticeWriter(rs.getString("notice_writer")).noticeContent(rs.getString("notice_content"))
+		.noticeDate(rs.getDate("notice_date")).filePath(rs.getString("filepath")!=null?rs.getString("filepath"):"")
+		.status(rs.getString("status")).build();
 	}
 }

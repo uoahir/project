@@ -9,10 +9,65 @@
     
     section#memberList-container table#tbl-member {width:100%; border:1px solid gray; border-collapse:collapse;}
     section#memberList-container table#tbl-member th, table#tbl-member td {border:1px solid gray; padding:10px; }
-</style>
-    
+	
+ 	div#search-container {margin:0 0 10px 0; padding:3px; 
+    background-color: rgba(0, 188, 212, 0.3);}
+    div#search-userId{display:inline-block;}
+    div#search-userName{display:none;}
+    div#search-gender{display:none;}
+    div#numPerpage-container{float:right;}
+    form#numperPageFrm{display:inline;}
+</style>    
+	<%if(!loginMember.getUserId().equals("admin")) {
+		response.sendRedirect(request.getContextPath());}%>
+		
+	
     <section id="memberList-container">
         <h2>회원관리</h2>
+                <div id="search-container">
+        	검색타입 : 
+        	<select id="searchType">
+        		<option value="userId" >아이디</option>
+        		<option value="userName" >회원이름</option>
+        		<option value="gender" >성별</option>
+        	</select>
+        	<div id="search-userId">
+        		<form action="<%=request.getContextPath()%>/admin/searchMember">
+        			<input type="hidden" name="searchType" value="userId" >
+        			<input type="text" name="searchKeyword" size="25" 
+        			placeholder="검색할 아이디를 입력하세요" >
+        			<button type="submit">검색</button>
+        		</form>
+        	</div>
+        	<div id="search-userName">
+        		<form action="<%=request.getContextPath()%>/admin/searchMember">
+        			<input type="hidden" name="searchType" value="userName">
+        			<input type="text" name="searchKeyword" size="25" 
+        			placeholder="검색할 이름을 입력하세요">
+        			<button type="submit">검색</button>
+        		</form>
+        	</div>
+        	<div id="search-gender">
+        		<form action="<%=request.getContextPath()%>/admin/searchMember">
+        			<input type="hidden" name="searchType" value="gender">
+        			<label><input type="radio" name="searchKeyword" value="M" >남</label>
+        			<label><input type="radio" name="searchKeyword" value="F" >여</label>
+        			<button type="submit">검색</button>
+        		</form>
+        	</div>
+        </div>
+        <div id="numPerpage-container">
+        	페이지당 회원수 : 
+        	<form id="numPerFrm" action="<%=request.getContextPath()%>/admin/searchMember">
+        		<select name="numPerpage" id="numPerpage">
+        			<option value="10">10</option>
+        			<option value="5" >5</option>
+        			<option value="3" >3</option>
+        		</select>
+        	</form>
+        </div>
+        
+        
         <table id="tbl-member">
             <thead>
             	<tr>
@@ -61,5 +116,39 @@
         	<%=request.getAttribute("pageBar") %>
         </div>
     </section>
+    
+    
+    <script>
+    	
+		const type = document.querySelector("#searchType");
+		
+		type.addEventListener("change",(e)=>{
+			let target = $(e.target).val();
+			switch(target){
+				case "userId" : 
+					$("#search-userId").css("display","inline-block");
+					$("#search-userName").css("display","none");
+					$("#search-gender").css("display","none");
+					break;
+				case "userName" : 
+					$("#search-userId").css("display","none");
+					$("#search-userName").css("display","inline-block");
+					$("#search-gender").css("display","none");
+					break;
+				case "gender" : 
+					$("#search-userId").css("display","none");
+					$("#search-userName").css("display","none");
+					$("#search-gender").css("display","inline-block");
+					break;
+			}
+		})
+		
+		const page = document.querySelector("#numPerpage");
+		page.addEventListener("change",(e)=>{
+			let target = e.target.value;
+			$("#numPerpage").attr("value",target);
+		})
+	</script>
+
 
 <%@ include file="/WEB-INF/views/common/footer.jsp"%>

@@ -5,6 +5,12 @@
   	<param-name>viewpath</param-name>
   	<param-value>/WEB-INF/views/</param-value>
   </context-param>
+  
+  <error-page>
+  	<exception-type>mvc.jy.common.exception.MyPageError</exception-type>
+  	<location>/WEB-INF/views/common/error/mypageError.jsp</location>
+  </error-page>
+  
   <welcome-file-list>
     <welcome-file>index.html</welcome-file>
     <welcome-file>index.jsp</welcome-file>
